@@ -248,15 +248,16 @@ FetchMock.prototype.called = function (name) {
 }
 
 FetchMock.prototype.done = function (name) {
-	const names = name ? [name] : this.routes.map(r => r.name);
+       const matcherName = name instanceof RegExp ? name.toString() : name;
+	const names = matcherName ? [matcherName] : this.routes.map(r => r.name);
 	// Ideally would use array.every, but not widely supported
 	return names.map(name => {
 		if (!this.called(name)) {
 			return false
 		}
 		// would use array.find... but again not so widely supported
-		const expectedTimes = (this.routes.filter(r => r.name === name) || [{}])[0].times;
-		return !expectedTimes || (expectedTimes <= this.calls(name).length)
+		const expectedTimes = (this.routes.filter(r => r.name === matcherName) || [{}])[0].times;
+		return !expectedTimes || (expectedTimes <= this.calls(matcherName).length)
 	})
 		.filter(bool => !bool).length === 0
 }
